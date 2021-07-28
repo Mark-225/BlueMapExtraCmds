@@ -1,18 +1,15 @@
 package de.mark225.bluemapextracmds.worldedit;
 
 import com.flowpowered.math.vector.Vector2d;
-import com.flowpowered.math.vector.Vector3d;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.session.SessionOwner;
 import de.mark225.bluemapextracmds.data.ShapeSelection;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class WorldEditAPIHook {
@@ -24,6 +21,7 @@ public class WorldEditAPIHook {
     public static ShapeSelection convertPlayerSelection(Player player){
         WorldEdit we = loadApi();
         LocalSession session = we.getSessionManager().getIfPresent(BukkitAdapter.adapt(player));
+        if(session == null) return null;
         Region selection = null;
         try {
             selection = session.getSelection(BukkitAdapter.adapt(player.getWorld()));
