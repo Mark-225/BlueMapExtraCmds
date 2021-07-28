@@ -1,0 +1,46 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'java'
+}
+
+group = 'de.mark225'
+version = 'v1.0-alpha'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'spigotmc-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://maven.enginehub.org/repo/'}
+    maven { url 'https://repo.minebench.de/'}
+}
+
+dependencies {
+    implementation 'org.spigotmc:spigot-api:1.13-R0.1-SNAPSHOT'
+    implementation 'com.github.BlueMap-Minecraft:BlueMapAPI:v1.6.0'
+    implementation 'com.sk89q.worldedit:worldedit-bukkit:7.0.0'
+    implementation 'de.themoep:minedown:1.7.1-SNAPSHOT'
+}
+
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    from(sourceSets.main.resources.srcDirs) {
+        filter ReplaceTokens, tokens: [version: version]
+    }
+}
+
+build.dependsOn shadowJar
+
+shadowJar{
+    dependencies {
+        include(dependency('de.themoep:minedown:1.7.1-SNAPSHOT'))
+    }
+    relocate "de.themoep.minedown", "de.mark225.shadow.de.themoep.minedown"
+}

@@ -1,0 +1,92 @@
+package de.mark225.bluemapextracmds.commands;
+
+import com.flowpowered.math.vector.Vector2d;
+import com.flowpowered.math.vector.Vector2i;
+import de.mark225.bluemapextracmds.BlueMapExtraCmds;
+import de.mark225.bluemapextracmds.data.ShapeBounds;
+import de.mark225.bluemapextracmds.data.ShapeSelection;
+import de.mark225.bluemapextracmds.util.Utils;
+import de.mark225.bluemapextracmds.worldedit.WorldEditAPIHook;
+import de.themoep.minedown.MineDown;
+import net.royawesome.jlibnoise.module.combiner.Min;
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class BMERegion implements CommandExecutor, TabCompleter {
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        //TODO: Add console support
+        if(!(sender instanceof Player)){
+            sender.spigot().sendMessage(new MineDown(Lang.WRONG_EXECUTOR_PLAYER).toComponent());
+            return true;
+        }
+        Player p = (Player) sender;
+        if(args.length == 0) return false;
+
+        if(args[0].equalsIgnoreCase("import") && args.length == 1){
+            if(!BlueMapExtraCmds.getInstance().isWorldEditInstalled()){
+                p.spigot().sendMessage(new MineDown(Lang.WE_UNAVAILABLE).toComponent());
+                return true;
+            }
+            ShapeSelection sel = WorldEditAPIHook.convertPlayerSelection(p);
+            if(sel == null){
+                p.spigot().sendMessage(new MineDown(Lang.WE_NO_SELECTION).toComponent());
+                return true;
+            }
+            BlueMapExtraCmds.getInstance().overwriteSelection(p.getUniqueId(), sel);
+            p.spigot().sendMessage(new MineDown(Lang.SEL_IMPORTED).toComponent());
+            System.out.println(sel.toString());
+            return true;
+        }else if(args[0].equalsIgnoreCase("reset") && args.length == 1){
+            BlueMapExtraCmds.getInstance().clearSelection(p.getUniqueId());
+            p.spigot().sendMessage(new MineDown(Lang.SEL_RESET).toComponent());
+            return true;
+        }else if(args[0].equalsIgnoreCase("addPoint")){
+
+        }else if(args[0].equalsIgnoreCase("blockify") && args.length == 1){
+            ShapeSelection sel = BlueMapExtraCmds.getInstance().getOrCreateSelection(p.getUniqueId());
+            if(!sel.isValidPolygon()){
+                p.spigot().sendMessage(new MineDown(Lang.BLOCKIFY_INVALID_SEL).toComponent());
+                return true;
+            }
+
+            final ShapeBounds bounds = sel.getBounds();
+            final float minY = sel.getMinY();
+            final float maxY = sel.getMaxY();
+            final List<Vector2i> integerPoly = sel.getPoints().stream().map(Vector2d::toInt).collect(Collectors.toList());
+
+            p.spigot().sendMessage(new MineDown(Lang.BLOCKIFY_STARTED).toComponent());
+
+            Bukkit.getScheduler().runTaskAsynchronously(BlueMapExtraCmds.getInstance(), () ->{
+
+                final ShapeSelection blockifiedSelection = Utils.blockifyPoly(integerPoly, bounds.getMinCorner().toInt(), bounds.getMaxCorner().toInt(), minY, maxY);
+
+                Bukkit.getScheduler().runTask(BlueMapExtraCmds.getInstance(), () ->{
+                   if(!p.isOnline()) return;
+                   if(blockifiedSelection == null){
+                       p.spigot().sendMessage(new MineDown(Lang.UNEXPECTED_ERROR).toComponent());
+                       return;
+                   }
+                   BlueMapExtraCmds.getInstance().overwriteSelection(p.getUniqueId(), blockifiedSelection);
+                   p.spigot().sendMessage(new MineDown(Lang.BLOCIFY_SUCCESS).toComponent());
+                });
+            });
+
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        return null;
+    }
+}

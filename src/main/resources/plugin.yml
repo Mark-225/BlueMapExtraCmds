@@ -1,0 +1,26 @@
+name: BlueMapExtraCmds
+version: @version@
+main: de.mark225.bluemapextracmds.BlueMapExtraCmds
+api-version: 1.13
+depend: [ BlueMap ]
+softdepend: [ WorldEdit ]
+authors: [ Mark_225 ]
+description: Adds missing marker commands to BlueMap
+commands:
+  bmeregion:
+    description: Can be used to define a region or import a Worldedit selection
+    usage: /bmeregion [import | addPoint (x;z) | reset | blockify]
+    permission: BlueMapExtraCmds.commands.bmeregion
+  bmedebug:
+    description: Debug command. Will not exist in final release.
+permissions:
+  BlueMapExtraCmds.*:
+    children:
+      BlueMapExtraCmds.commands.*: true
+    default: op
+  BlueMapExtraCmds.commands.*:
+    children:
+      BlueMapExtraCmds.commands.bmeregion: true
+    default: op
+  BlueMapExtraCmds.commands.bmeregion:
+    default: op
