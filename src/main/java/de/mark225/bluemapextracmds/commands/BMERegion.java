@@ -50,6 +50,11 @@ public class BMERegion implements CommandExecutor, TabCompleter {
             p.spigot().sendMessage(new MineDown(Lang.SEL_RESET).toComponent());
             return true;
         }else if(args[0].equalsIgnoreCase("addPoint")){
+            if(args.length != 3) return false;
+            String pointX = args[1];
+            String pointZ = args[2];
+            double x;
+            double y;
 
         }else if(args[0].equalsIgnoreCase("blockify") && args.length == 1){
             ShapeSelection sel = BlueMapExtraCmds.getInstance().getOrCreateSelection(p.getUniqueId());
@@ -83,6 +88,16 @@ public class BMERegion implements CommandExecutor, TabCompleter {
             return true;
         }
         return false;
+    }
+
+    private static double toDouble(String in, double coords) throws NumberFormatException{
+        double out;
+        if(!in.startsWith("~")) return Double.parseDouble(in);
+        String[] components = in.split(".");
+        if(!components.length <= 2) return new NumberFormatException("Arguments with \"~\" can only have one decimal point");
+        if(components.length == 1) return coords;
+        String fraction = "0." + components[1];
+        return Math.floor(coords) + Double.parseDouble(fraction);
     }
 
     @Override
