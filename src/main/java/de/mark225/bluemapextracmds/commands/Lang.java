@@ -9,5 +9,9 @@ public interface Lang {
     String BLOCKIFY_INVALID_SEL = "&red&You must first select a valid polygon (>=3 points) to do this.";
     String UNEXPECTED_ERROR = "&red&An unexpected error occurred. Please report this to the plugin author.";
     String BLOCKIFY_STARTED = "&green&Blockify in progress. This may take a while for large polygons...\n&red&Do not use or edit your region selection while this is running.";
-    String BLOCIFY_SUCCESS = "&green&Blockify completed. You can now use your selection to create markers.";
+    String BLOCKIFY_SUCCESS = "&green&Blockify completed. You can now use your selection to create markers.";
+    String NUMBER_FORMAT = "&red&Wrong number format!\n" +
+            "Make sure you are either entering a number or a '~' symbol to use your current x/z coordinates (optionally followed by decimal places). Examples:\n" +
+            "2.5, -1, ~, ~.5, ~.0";
+    String POINT_ADDED = "&green&Point %point% added to your current selection";
 }
