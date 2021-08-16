@@ -13,6 +13,10 @@ commands:
     permission: BlueMapExtraCmds.commands.bmeregion
   bmedebug:
     description: Debug command. Will not exist in final release.
+  bmetool:
+    description: Adds the region creation tool to your inventory
+    usage: /bmetool
+    permission: BlueMapExtraCmds.commands.bmetool
 permissions:
   BlueMapExtraCmds.*:
     children:
@@ -21,6 +25,9 @@ permissions:
   BlueMapExtraCmds.commands.*:
     children:
       BlueMapExtraCmds.commands.bmeregion: true
+      BlueMapExtraCmds.commands.bmetool: true
     default: op
   BlueMapExtraCmds.commands.bmeregion:
+    default: op
+  BlueMapExtraCmds.commands.bmetool:
     default: op

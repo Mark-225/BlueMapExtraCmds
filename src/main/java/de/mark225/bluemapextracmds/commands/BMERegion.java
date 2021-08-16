@@ -5,6 +5,7 @@ import com.flowpowered.math.vector.Vector2i;
 import de.mark225.bluemapextracmds.BlueMapExtraCmds;
 import de.mark225.bluemapextracmds.data.ShapeBounds;
 import de.mark225.bluemapextracmds.data.ShapeSelection;
+import de.mark225.bluemapextracmds.util.SimpleTabCompleter;
 import de.mark225.bluemapextracmds.util.Utils;
 import de.mark225.bluemapextracmds.worldedit.WorldEditAPIHook;
 import de.themoep.minedown.MineDown;
@@ -20,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BMERegion implements CommandExecutor, TabCompleter {
+public class BMERegion implements CommandExecutor, SimpleTabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -107,16 +108,11 @@ public class BMERegion implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        List<String> suggestions = new ArrayList<>();
-
+    public void onTabComplete(CommandSender sender, Command command, String alias, String[] args, List<String> completions) {
         if(args.length == 1){
-            suggestions.addAll(Arrays.asList("import", "reset", "addPoint", "blockify"));
+            completions.addAll(Arrays.asList("import", "reset", "addPoint", "blockify"));
         }else if(args.length == 2 || args.length == 3 && args[0].equalsIgnoreCase("addPoint")){
-            suggestions.addAll(Arrays.asList("~", "~."));
+            completions.addAll(Arrays.asList("~", "~."));
         }
-
-        suggestions.removeIf(string -> !string.startsWith(args[args.length -1]));
-        return suggestions;
     }
 }

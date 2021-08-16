@@ -14,4 +14,11 @@ public interface Lang {
             "Make sure you are either entering a number or a '~' symbol to use your current x/z coordinates (optionally followed by decimal places). Examples:\n" +
             "2.5, -1, ~, ~.5, ~.0";
     String POINT_ADDED = "&green&Point %point% added to your current selection";
+    String SWITCHED_MODE = "&green&Current Mode: &white&%mode%";
+    String POINT_REMOVED = "&green&Last point removed";
+    String NO_POINTS_AVAILABLE = "&red&Can't remove points from an empty selection";
+    String NO_INV_SPACE = "&red&Your Inventory is full!";
+    String TOOL_ADDED = "&green&Region creation tool has been added to your inventory!";
+    String ERROR_RETRY = "&red&Something went wrong, please try again";
+
 }
