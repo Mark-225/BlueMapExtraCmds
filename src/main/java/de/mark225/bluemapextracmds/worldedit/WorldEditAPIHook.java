@@ -10,6 +10,7 @@ import de.mark225.bluemapextracmds.data.ShapeSelection;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 public class WorldEditAPIHook {
@@ -29,7 +30,7 @@ public class WorldEditAPIHook {
             return null;
         }
         List<Vector2d> points = selection.polygonize(-1).stream().map(bv2 -> new Vector2d(bv2.getX() + 0.5, bv2.getZ() + 0.5)).collect(Collectors.toList());
-        return new ShapeSelection(selection.getMinimumPoint().getY(), selection.getMaximumPoint().getY(), points);
+        return new ShapeSelection(selection.getMinimumPoint().getY(), selection.getMaximumPoint().getY(), new CopyOnWriteArrayList<>(points));
     }
 
 }

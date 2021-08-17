@@ -17,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class BlueMapExtraCmds extends JavaPlugin {
 
@@ -27,7 +28,7 @@ public final class BlueMapExtraCmds extends JavaPlugin {
     }
 
     private BlueMapIntegration integration;
-    private HashMap<UUID, ShapeSelection> playerSelections = new HashMap<>();
+    private ConcurrentHashMap<UUID, ShapeSelection> playerSelections = new ConcurrentHashMap<>();
 
 
     @Override
@@ -63,7 +64,7 @@ public final class BlueMapExtraCmds extends JavaPlugin {
         return worldEdit != null;
     }
 
-    public ShapeSelection getOrCreateSelection(UUID player){
+    public synchronized ShapeSelection getOrCreateSelection(UUID player){
         if(!playerSelections.containsKey(player))
             playerSelections.put(player, new ShapeSelection());
         return playerSelections.get(player);

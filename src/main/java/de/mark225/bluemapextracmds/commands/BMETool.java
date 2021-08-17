@@ -1,6 +1,7 @@
 package de.mark225.bluemapextracmds.commands;
 
 import com.flowpowered.math.vector.Vector2d;
+import com.flowpowered.math.vector.Vector3d;
 import de.mark225.bluemapextracmds.BlueMapExtraCmds;
 import de.mark225.bluemapextracmds.data.ShapeSelection;
 import de.mark225.bluemapextracmds.util.BMEKeys;
@@ -84,6 +85,7 @@ public class BMETool implements CommandExecutor, SimpleTabCompleter, Listener {
         lore.add(ChatColor.WHITE + "Right click" + ChatColor.GRAY + " to add a location");
         lore.add(ChatColor.WHITE + "Left click" + ChatColor.GRAY + " to remove the last location");
         lore.add(ChatColor.WHITE + "Sneak + Scroll" + ChatColor.GRAY + " to cycle through modes");
+        lore.add(ChatColor.WHITE + "Sneak + Left/Right click" + ChatColor.GRAY + " to cycle through shape edges");
         lore.add("");
         lore.add(ChatColor.YELLOW + "Current Mode: " + ChatColor.WHITE + currentMode.getDisplayName());
         lore.add(ChatColor.GRAY + currentMode.getDescription());
@@ -135,6 +137,10 @@ public class BMETool implements CommandExecutor, SimpleTabCompleter, Listener {
         switch(action){
             case LEFT_CLICK_AIR:
             case LEFT_CLICK_BLOCK:
+                if(p.isSneaking()){
+                    cycleShape(shape, false);
+                    break;
+                }
                 if(shape.getPoints().size() <= 0){
                     p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new MineDown(Lang.NO_POINTS_AVAILABLE).toComponent());
                     break;
@@ -143,32 +149,52 @@ public class BMETool implements CommandExecutor, SimpleTabCompleter, Listener {
                 p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new MineDown(Lang.POINT_REMOVED).toComponent());
                 break;
             case RIGHT_CLICK_BLOCK:
+                if(p.isSneaking()){
+                    cycleShape(shape, true);
+                    break;
+                }
                 Location clickedLocation = evt.getClickedBlock().getLocation();
                 Mode mode = getMode(im);
-                Vector2d toAdd = null;
+                Vector3d toAdd = null;
                 switch (mode){
                     case BLOCK:
-                        toAdd = new Vector2d(clickedLocation.getX(), clickedLocation.getZ());
+                        toAdd = new Vector3d(clickedLocation.getX(), clickedLocation.getY() + 1, clickedLocation.getZ());
                         break;
                     case CENTER:
-                        toAdd = new Vector2d(clickedLocation.getX() + 0.5, clickedLocation.getZ() + 0.5);
+                        toAdd = new Vector3d(clickedLocation.getX() + 0.5, clickedLocation.getY() + 1, clickedLocation.getZ() + 0.5);
                         break;
                     case EXACT:
                         RayTraceResult result = p.rayTraceBlocks(5, FluidCollisionMode.NEVER);
                         if(result == null) break;
                         org.bukkit.util.Vector bukkitVector = p.rayTraceBlocks(5, FluidCollisionMode.NEVER).getHitPosition();
-                        toAdd = new Vector2d(bukkitVector.getX(), bukkitVector.getZ());
+                        toAdd = new Vector3d(bukkitVector.getX(),bukkitVector.getY(), bukkitVector.getZ());
                         break;
                 }
                 if(toAdd == null){
                     p.spigot().sendMessage(new MineDown(Lang.ERROR_RETRY).toComponent());
                     break;
                 }
-                shape.getPoints().add(toAdd);
+                shape.getPoints().add(new Vector2d(toAdd.getX(), toAdd.getZ()));
+                if(shape.getMinY() > toAdd.getY() || shape.getPoints().size() == 1) shape.setMinY((float) toAdd.getY());
                 p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new MineDown(Lang.POINT_ADDED).replace("point", toAdd.toString()).toComponent());
+                break;
+            case RIGHT_CLICK_AIR:
+                if(p.isSneaking()) cycleShape(shape, true);
                 break;
         }
 
+    }
+
+    private void cycleShape(ShapeSelection selection, boolean backwards){
+        List<Vector2d> points = selection.getPoints();
+        if(points.size() <= 0) return;
+        if(!backwards){
+            Vector2d point = points.remove(0);
+            points.add(point);
+        }else{
+            Vector2d point = points.remove(points.size() -1);
+            points.add(0, point);
+        }
     }
 
     public static boolean isBMETool(ItemMeta im){

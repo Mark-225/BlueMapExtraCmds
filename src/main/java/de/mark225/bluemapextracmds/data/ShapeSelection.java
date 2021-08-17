@@ -5,23 +5,22 @@ import com.flowpowered.math.vector.Vector2i;
 import de.bluecolored.bluemap.api.marker.Shape;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 public class ShapeSelection {
-    private float minY;
-    private float maxY;
-    private List<Vector2d> points;
+    private float minY = 0;
+    private float maxY = 0;
+    private CopyOnWriteArrayList<Vector2d> points = new CopyOnWriteArrayList<>();
 
-    public ShapeSelection(float minY, float maxY, List<Vector2d> points) {
+    public ShapeSelection(){
+
+    }
+
+    public ShapeSelection(float minY, float maxY, CopyOnWriteArrayList<Vector2d> points) {
         this.minY = minY;
         this.maxY = maxY;
         this.points = points;
-    }
-
-    public ShapeSelection(){
-        minY = 0;
-        maxY = 0;
-        points = new ArrayList<>();
     }
 
     public float getMinY() {
@@ -40,12 +39,8 @@ public class ShapeSelection {
         this.maxY = maxY;
     }
 
-    public List<Vector2d> getPoints() {
+    public CopyOnWriteArrayList<Vector2d> getPoints() {
         return points;
-    }
-
-    public void setPoints(List<Vector2d> points) {
-        this.points = points;
     }
 
     public Shape toBluemapShape(){

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Utils {
 
@@ -175,7 +176,7 @@ public class Utils {
 
         }
 
-        return new ShapeSelection(minY, maxY, newPoly);
+        return new ShapeSelection(minY, maxY, new CopyOnWriteArrayList<>(newPoly));
     }
 
 }
